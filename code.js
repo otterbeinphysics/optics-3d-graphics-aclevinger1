@@ -6,13 +6,15 @@ var ctx = null;
 var gWidth = null;
 var gHeight = null;
 
+
+
 var gT = 0; 		// This will always be set to the current time-since-page-load, in ms
 var gdT = 50; 		// This will always be set to the current time-since-last frame, (but capped at something reasonable)
 var g_last_frame_t = Date.now();
 
 var gBoxSize;
 var gMyCheckbox;
-var gCtl2
+var gCtl2;
 
 var gContinuousRedraw = true;
 
@@ -108,6 +110,7 @@ function AnimationFrame()
 	$("#fps").text((1000/dt).toFixed(1));
 
 	// Execute your code
+
 	Draw();
 
 
@@ -122,10 +125,33 @@ function Draw()
 	// Here's where you will draw things!
 	Clear(); // Clear the viewport; code below.
 
-	// Note that in this projection, x is RIGHT, y is DOWN (not up!) 
-	DrawBox(50,50, gBoxSize);
+	// Note that in this projection, x is RIGHT, y is DOWN (not up!)
+	
+	
+	speed = 0.001;
+	omega = .001;
+	DrawCube(100*Math.random(),omega,speed,speed,speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,speed, speed, -speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,speed,-speed,-speed,4*Math.random())|0;
+	DrawCube(100*Math.random(),omega,-speed,-speed,-speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,-speed,speed,speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,-speed,speed,-speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,-speed,-speed,speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,speed,-speed,speed,4*Math.random()|0);
+	DrawCube(100*Math.random(),omega,0,0,0,4*Math.random()|0);
+	
 
-	if(gMyCheckbox) DrawBox(-100,-100,gBoxSize/2);
+		
+		
+	
+
+
+
+	if(gMyCheckbox) DrawCube(Math.random()*200,100,.0001,.0001,.0001);
+		
+		
+	
+		
 }
 
 
@@ -141,20 +167,31 @@ function DrawBox(x,y,size)
 	// Sample code to show some simple draw commands in 2d
 	ctx.strokeStyle = "red";  
 	ctx.lineWidth = 2;  // thickish lines
+	var pi = Math.PI;
+
 
 	var x1 = x;
 	var y1 = y;
-	var x2 = x+size;
-	var y2 = y+size;
+
+	var x2 = (x1+size) * Math.cos(pi/12) + y1 * Math.sin(pi/12);
+	var y2 = y1 * Math.cos(pi/12) - x1 * Math.sin(pi/12);
+
+	var x3 = (x1+size) * Math.cos(pi/12) + (y1+size) * Math.sin(pi/12);
+	var y3 = (y1 + size) * Math.cos(pi/12) - (x1+size) * Math.sin(pi/12);
+
+	var x4 = (x1 + size) * Math.cos(pi/12) + y1* Math.sin(pi/12);
+	var y4 = (y1 + size) * Math.cos(pi/12) - (x1+size) * Math.sin(pi/12);
+
+	console.log("box",x1,y1,x2,y2,x3,y3,x4,y4);
 
 	// FIRST EXERCISE:
 	// Modify the coordinates above so that they are rotated by 15 degrees to draw the box
 
 	ctx.beginPath();  // We want to draw a line.
 	ctx.moveTo(x1,y1);  // start at a corner upper left hand cornner
-	ctx.lineTo(x2,y);  // draw a line to the right
-	ctx.lineTo(x2,y2); //  draw a line down
-	ctx.lineTo(x1,y2); // draw a line left
+	ctx.lineTo(x2,y2);  // draw a line to the right
+	ctx.lineTo(x3,y3); //  draw a line down
+	ctx.lineTo(x4,y4); // draw a line left
 	ctx.lineTo(x1,y1);       // Draw a line up and back to the start corner
 	ctx.stroke(); // actually draw the line on the screen as a red line of thickness 2
 
@@ -194,4 +231,112 @@ function DummyExample()
 	console.log("R",R);
 	console.log("identity",I.mult(R));
 	console.log("identity",R.mult(I));
+}
+
+var eyedistance = 400
+var screen = 200
+
+function projector(p) {
+	var xy = vec2(0,0);
+	xy.x(screen * p(0)/(eyedistance + p(2)));
+	xy.y(screen * p(1)/(eyedistance + p(2)));
+	return xy;
+}
+
+var screen_distance = 400;
+var eye_distance = 800;
+function Project(p)
+{
+
+  // return the  x-y coordinates for a 3-vector
+  var xy = vec2(0,0);
+  xy[0] = p.x()/(p.z()+eye_distance)*screen_distance;
+  xy[1] = p.y()/(p.z()+eye_distance)*screen_distance;
+  return xy;
+}
+
+function MoveTo3d(p)
+{
+	var x = p.x()/(p.z()+eye_distance)*screen_distance;
+  	var y = p.y()/(p.z()+eye_distance)*screen_distance;
+	ctx.moveTo(x,y);
+}
+function LineTo3d(p)
+{
+	var x = p.x()/(p.z()+eye_distance)*screen_distance;
+  	var y = p.y()/(p.z()+eye_distance)*screen_distance;
+	ctx.lineTo(x,y);
+}
+function DrawCube(a,w,vx,vy,vz,color)
+{
+	var theta = w*gT;
+	
+	var R = mat4(       [ Math.cos(theta),  -Math.sin(theta), 0,0],
+						[ Math.sin(theta),   Math.cos(theta), 0 ,0],
+						[ 0              ,   0              , 1 ,0],
+						[0               ,   0              , 0 ,1]
+						);
+	var T = mat4([1,0,0,vx*gT],[0,1,0,vy*gT],[0,0,1,vz*gT],[0,0,0,1]);
+	if(color == 0) {
+		ctx.strokeStyle = "blue";
+	}
+	if(color ==1) {
+		ctx.strokeStyle = "red";
+	}
+	if(color == 2) {
+		ctx.strokeStyle = "yellow";
+	}
+	if(color == 3) {
+		ctx.strokeStyle = "black"
+	}
+
+
+	ctx.lineWidth = 2;
+
+	// a is the half-width of the cube
+	var p1 = R.mult(vec4(-a,-a,-a,1));           
+	var p2 = R.mult(vec4(-a,+a,-a,1));           
+	var p3 = R.mult(vec4(+a,+a,-a,1));           
+	var p4 = R.mult(vec4(+a,-a,-a,1));           
+	var p5 = R.mult(vec4(-a,-a,+a,1));           
+	var p6 = R.mult(vec4(-a,+a,+a,1));           
+	var p7 = R.mult(vec4(+a,+a,+a,1));           
+	var p8 = R.mult(vec4(+a,-a,+a,1));  
+
+	p1 = T.mult(p1);
+	p2 = T.mult(p2);
+	p3 = T.mult(p3);
+	p4 = T.mult(p4);
+	p5 = T.mult(p5);
+	p6 = T.mult(p6);
+	p7 = T.mult(p7);
+	p8 = T.mult(p8); 
+
+	
+	
+	ctx.beginPath();
+	MoveTo3d(p1);
+	LineTo3d(p2);
+	LineTo3d(p3);
+	LineTo3d(p4);
+	LineTo3d(p1);
+	MoveTo3d(p5);
+	LineTo3d(p6);
+	LineTo3d(p7);
+	LineTo3d(p8);
+	LineTo3d(p5);
+
+	MoveTo3d(p1); LineTo3d(p5);
+	MoveTo3d(p2); LineTo3d(p6);
+	MoveTo3d(p3); LineTo3d(p7);
+	MoveTo3d(p4); LineTo3d(p8);
+	ctx.stroke();
+
+	
+
+}
+
+function rotate(theta)
+{
+	mat4(Math.sin(theta),Math.cos(theta),0,Math.cos(theta),Math.sin(theta),0,0,0,1);
 }
