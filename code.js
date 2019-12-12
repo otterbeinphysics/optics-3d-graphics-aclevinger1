@@ -130,15 +130,15 @@ function Draw()
 	
 	speed = 0.001;
 	omega = .001;
-	DrawCube(100*Math.random(),omega,speed,speed,speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,speed, speed, -speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,speed,-speed,-speed,4*Math.random())|0;
-	DrawCube(100*Math.random(),omega,-speed,-speed,-speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,-speed,speed,speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,-speed,speed,-speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,-speed,-speed,speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,speed,-speed,speed,4*Math.random()|0);
-	DrawCube(100*Math.random(),omega,0,0,0,4*Math.random()|0);
+	DrawCube(100,omega,speed,speed,speed,4*Math.random()|0);
+	DrawCube(100,omega,speed, speed, -speed,4*Math.random()|0);
+	DrawCube(100,omega,speed,-speed,-speed,4*Math.random())|0;
+	DrawCube(100,omega,-speed,-speed,-speed,4*Math.random()|0);
+	DrawCube(100,omega,-speed,speed,speed,4*Math.random()|0);
+	DrawCube(100,omega,-speed,speed,-speed,4*Math.random()|0);
+	DrawCube(100,omega,-speed,-speed,speed,4*Math.random()|0);
+	DrawCube(100,omega,speed,-speed,speed,4*Math.random()|0);
+	DrawCube(100,omega,0,0,0,4*Math.random()|0);
 	
 
 		
